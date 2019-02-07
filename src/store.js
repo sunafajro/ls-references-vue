@@ -10,6 +10,7 @@ export default new Vuex.Store({
     breadcrumbs: {},
     links: [],
     navLinks: [],
+    mode: 'standalone',
     user: {}
   },
   mutations: {

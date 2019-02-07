@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 col-xl-2">
-      <nav-component/>
+      <nav-component v-if="mode === 'bitrix'"/>
       <info-component/>
       <menu-component title="Справочники"></menu-component>
       <div v-if="actions.create">
@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-xl-10">
-      <breadcrumbs-component type="studentnorms"/>
+      <breadcrumbs-component type="studentnorms" v-if="mode === 'bitrix'"/>
       <table-component
         v-bind:actions="actions"
         v-bind:columns="columns"
@@ -27,7 +27,7 @@
 <script>
 /* global $ */
 import axios from "axios";
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import Breadcrumbs from "../helpers/Breadcrumbs.vue";
 import Info from "../helpers/Info";
 import Menu from "../helpers/Menu";
@@ -48,6 +48,9 @@ export default {
       columns: [],
       data: []
     };
+  },
+  computed: {
+    ...mapState(["mode"])
   },
   created() {
     this.getData();
