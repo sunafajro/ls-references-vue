@@ -84,7 +84,7 @@ export default {
     },
     async getData() {
       try {
-        const { data } = await axios.get("/langpremium/index");
+        const { data } = await axios.get("/language-premium/index");
         if (data.hasOwnProperty("columns") && data.columns.length > 0) {
           this.columns = data.columns;
         }
@@ -110,7 +110,7 @@ export default {
       try {
         const { data: token } = await axios.get("/site/csrf");
         const { data: res } = await axios.post(
-          "/langpremium/delete?id=" + id,
+          "/language-premium/delete?id=" + id,
           token
         );
         this.$store.dispatch("showNotification", {

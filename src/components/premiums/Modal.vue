@@ -70,7 +70,7 @@ export default {
           calc_lang: this.premium.language,
           value: this.premium.value
         };
-        const { data: res } = await axios.post("/langpremium/create", token);
+        const { data: res } = await axios.post("/language-premium/create", token);
         this.$store.dispatch("showNotification", {
           text: res.text ? res.text : "Языковая надбавка успешно добавлен!",
           type: "success"
