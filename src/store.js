@@ -9,12 +9,16 @@ const el = document.getElementById('app');
 export default new Vuex.Store({
   state: {
     breadcrumbs: {},
+    csrfToken: null,
     links: [],
     navLinks: [],
     mode: el.dataset.mode,
     user: {},
   },
   mutations: {
+    updateCSRFToken(state, token) {
+      state.csrfToken = token;
+    },
     updateLinks(state, data) {
       state.links = data;
       state.breadcrumbs = data.reduce((a, v) => {
@@ -50,6 +54,23 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    /**
+     * csrf токен для валидации post запросов
+     */
+    async getCSRFToken({ commit, dispatch }) {
+      try {
+        const { data } = await axios.get('/site/csrf');
+        commit('updateCSRFToken', data);
+      } catch (e) {
+        dispatch('showNotification', {
+          text:
+            'Ошибка запроса к серверу!' +
+            (e && e.message ? ' ' + e.message : ''),
+          type: 'error',
+        });
+        throw new Error('Ошибка запроса к серверу!');
+      }
+    },
     async getMenuLinks({ commit, dispatch }) {
       try {
         const { data } = await axios.get('/reference/menu-links');

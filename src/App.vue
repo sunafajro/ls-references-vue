@@ -5,16 +5,25 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 export default {
-  created() {
-    this.getMenuLinks();
-    this.getNavLinks();
-    this.getUserInfo();
+  computed: {
+    ...mapState(['mode']),
+  },
+  async created() {
+    const promises = [
+      this.getCSRFToken(),
+      this.getMenuLinks(),
+      this.getUserInfo(),
+    ];
+    if (this.mode === 'bitrix') {
+      promises.push(this.getNavLinks());
+    }
+    await Promise.all(promises);
   },
   methods: {
-    ...mapActions(['getMenuLinks', 'getNavLinks', 'getUserInfo']),
+    ...mapActions(['getCSRFToken', 'getMenuLinks', 'getNavLinks', 'getUserInfo']),
   },
 };
 </script>
