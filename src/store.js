@@ -1,17 +1,18 @@
-import Vue from "vue";
-import Vuex from "vuex";
-import Noty from "noty";
-import axios from "axios";
+import Vue from 'vue';
+import Vuex from 'vuex';
+import Noty from 'noty';
+import axios from 'axios';
 
 Vue.use(Vuex);
+const el = document.getElementById('app');
 
 export default new Vuex.Store({
   state: {
     breadcrumbs: {},
     links: [],
     navLinks: [],
-    mode: 'standalone',
-    user: {}
+    mode: el.dataset.mode,
+    user: {},
   },
   mutations: {
     updateLinks(state, data) {
@@ -20,23 +21,23 @@ export default new Vuex.Store({
         const key = v.url.slice(1);
         a[v.url.slice(1)] = [
           {
-            id: "home",
+            id: 'home',
             style: null,
-            text: "Главная",
-            url: "/"
+            text: 'Главная',
+            url: '/',
           },
           {
-            id: "references",
+            id: 'references',
             style: null,
-            text: "Справочники",
-            url: "/index"
+            text: 'Справочники',
+            url: '/index',
           },
           {
             id: key,
-            style: "active",
+            style: 'active',
             text: v.name,
-            url: null
-          }
+            url: null,
+          },
         ];
         return a;
       }, {});
@@ -46,53 +47,59 @@ export default new Vuex.Store({
     },
     updateUser(state, data) {
       state.user = data;
-    }
+    },
   },
   actions: {
     async getMenuLinks({ commit, dispatch }) {
       try {
-        const { data } = await axios.get("/reference/menu-links");
-        commit("updateLinks", data.links);
+        const { data } = await axios.get('/reference/menu-links');
+        commit('updateLinks', data.links);
       } catch (e) {
-        dispatch("showNotification", {
-          text: "Ошибка загрузки элементов меню справочников! " + (e && e.message ? e.message : ""),
-          type: "error"
+        dispatch('showNotification', {
+          text:
+            'Ошибка загрузки элементов меню справочников! ' +
+            (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
     async getNavLinks({ commit, dispatch }) {
       try {
-        const { data: token } = await axios.get("/site/csrf");
+        const { data: token } = await axios.get('/site/csrf');
         const { data: nav } = await axios.post(
-          "/site/nav",
-          Object.assign({}, token, { type: "all" })
+          '/site/nav',
+          Object.assign({}, token, { type: 'all' })
         );
-        commit("updateNavLinks", nav.navElements);
+        commit('updateNavLinks', nav.navElements);
       } catch (e) {
-        dispatch("showNotification", {
-          text: "Ошибка загрузки элементов меню навигации! " + (e && e.message ? e.message : ""),
-          type: "error"
+        dispatch('showNotification', {
+          text:
+            'Ошибка загрузки элементов меню навигации! ' +
+            (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
     async getUserInfo({ commit, dispatch }) {
       try {
-        const { data } = await axios.get("/user/get-info");
-        commit("updateUser", data.userData);
+        const { data } = await axios.get('/user/get-info');
+        commit('updateUser', data.userData);
       } catch (e) {
-        dispatch("showNotification", {
-          text: "Ошибка загрузки информации о пользователе! " + (e && e.message ? e.message : ""),
-          type: "error"
+        dispatch('showNotification', {
+          text:
+            'Ошибка загрузки информации о пользователе! ' +
+            (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
     showNotification(args, payload) {
       new Noty({
-        theme: "bootstrap-v4",
+        theme: 'bootstrap-v4',
         text: payload.text,
         timeout: 3000,
-        type: payload.type
+        type: payload.type,
       }).show();
-    }
-  }
+    },
+  },
 });
