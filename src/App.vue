@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions } from 'vuex';
 
 export default {
   created() {
@@ -14,8 +14,8 @@ export default {
     this.getUserInfo();
   },
   methods: {
-    ...mapActions(["getMenuLinks", "getNavLinks", "getUserInfo"])
-  }
+    ...mapActions(['getMenuLinks', 'getNavLinks', 'getUserInfo']),
+  },
 };
 </script>
 
