@@ -37,48 +37,46 @@
 
 <script>
 /* global $ */
-import axios from "axios";
-import { mapActions } from "vuex";
+import axios from 'axios';
+import { mapActions, mapState } from 'vuex';
 
 const emptyRoom = {
-  name: "",
-  office: "-select-"
+  name: '',
+  office: '-select-',
 };
 
 export default {
-  props: {
-    offices: {
-      type: Array,
-      require: true
-    }
+  computed: {
+    ...mapState(['csrfToken']),
   },
   data() {
     return {
-      room: { ...emptyRoom }
+      room: { ...emptyRoom },
     };
   },
   methods: {
-    ...mapActions(["showNotification"]),
+    ...mapActions(['showNotification']),
     async createRoom() {
       try {
-        const { data: token } = await axios.get("/site/csrf");
-        token.Room = {
-          name: this.room.name,
-          calc_office: this.room.office
-        };
-        const { data: res } = await axios.post("/room/create", token);
-        this.$store.dispatch("showNotification", {
-          text: res.text ? res.text : "Кабинет успешно добавлен!",
-          type: "success"
+        const body = Object.assign({}, this.csrfToken, {
+          Room: {
+            name: this.room.name,
+            calc_office: this.room.office,
+          },
+        });
+        const { data: res } = await axios.post('/room/create', body);
+        this.$store.dispatch('showNotification', {
+          text: res.text ? res.text : 'Кабинет успешно добавлен!',
+          type: 'success',
         });
         this.room = { ...emptyRoom };
-        $("#roomModal").modal("hide");
-        this.$emit("refresh");
+        $('#roomModal').modal('hide');
+        this.$emit('refresh');
       } catch (e) {
-        this.$store.dispatch("showNotification", {
+        this.$store.dispatch('showNotification', {
           text:
-            "Не удалось добавить кабинет! " + (e && e.message ? e.message : ""),
-          type: "error"
+            'Не удалось добавить кабинет! ' + (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
@@ -90,24 +88,30 @@ export default {
     validate() {
       let result = true;
       if (!this.room.name) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Название» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Название» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       if (
         !this.room.office ||
-        (this.room.office && this.room.office === "-select-")
+        (this.room.office && this.room.office === '-select-')
       ) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Город» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Город» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       return result;
-    }
-  }
+    },
+  },
+  props: {
+    offices: {
+      type: Array,
+      require: true,
+    },
+  },
 };
 </script>

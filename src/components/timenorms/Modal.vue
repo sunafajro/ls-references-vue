@@ -34,48 +34,52 @@
 
 <script>
 /* global $ */
-import axios from "axios";
-import { mapActions } from "vuex";
+import axios from 'axios';
+import { mapActions, mapState } from 'vuex';
 
 const emptyTimenorm = {
-  name: "",
-  value: ""
+  name: '',
+  value: '',
 };
 
 export default {
+  computed: {
+    ...mapState(['csrfToken']),
+  },
   data() {
     return {
-      timenorm: { ...emptyTimenorm }
+      timenorm: { ...emptyTimenorm },
     };
   },
   methods: {
-    ...mapActions(["showNotification"]),
+    ...mapActions(['showNotification']),
     async createTimenorm() {
       try {
-        const { data: token } = await axios.get("/site/csrf");
         let value =
-          typeof this.timenorm.value === "string"
+          typeof this.timenorm.value === 'string'
             ? this.timenorm.value
             : String(this.timenorm.value);
-        value = value.replace(/,/g, ".");
-        token.Timenorm = {
-          name: this.timenorm.name,
-          value
-        };
-        const { data: res } = await axios.post("/timenorm/create", token);
-        this.$store.dispatch("showNotification", {
-          text: res.text ? res.text : "Норма времени успешно добавлена!",
-          type: "success"
+        value = value.replace(/,/g, '.');
+        const body = Object.assign({}, this.csrfToken, {
+          Timenorm: {
+            name: this.timenorm.name,
+            value,
+          },
+        });
+        const { data: res } = await axios.post('/timenorm/create', body);
+        this.$store.dispatch('showNotification', {
+          text: res.text ? res.text : 'Норма времени успешно добавлена!',
+          type: 'success',
         });
         this.timenorm = { ...emptyTimenorm };
-        $("#timenormModal").modal("hide");
-        this.$emit("refresh");
+        $('#timenormModal').modal('hide');
+        this.$emit('refresh');
       } catch (e) {
-        this.$store.dispatch("showNotification", {
+        this.$store.dispatch('showNotification', {
           text:
-            "Не удалось добавить норму времени! " +
-            (e && e.message ? e.message : ""),
-          type: "error"
+            'Не удалось добавить норму времени! ' +
+            (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
@@ -87,21 +91,21 @@ export default {
     validate() {
       let result = true;
       if (!this.timenorm.name) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Название» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Название» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       if (!this.timenorm.value) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Значение» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Значение» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       return result;
-    }
-  }
+    },
+  },
 };
 </script>

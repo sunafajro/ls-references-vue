@@ -26,32 +26,32 @@
 
 <script>
 /* global $ */
-import axios from "axios";
-import { mapActions, mapState } from "vuex";
-import Breadcrumbs from "../helpers/Breadcrumbs.vue";
-import Info from "../helpers/Info";
-import Menu from "../helpers/Menu";
-import Modal from "./Modal";
-import Navigation from "../helpers/Navigation";
-import Table from "../helpers/Table";
+import axios from 'axios';
+import { mapActions, mapState } from 'vuex';
+import Breadcrumbs from '../helpers/Breadcrumbs.vue';
+import Info from '../helpers/Info';
+import Menu from '../helpers/Menu';
+import Modal from './Modal';
+import Navigation from '../helpers/Navigation';
+import Table from '../helpers/Table';
 
 const defaultActions = {
   create: false,
   update: false,
-  delete: false
+  delete: false,
 };
 
 export default {
   components: {
-    "breadcrumbs-component": Breadcrumbs,
-    "info-component": Info,
-    "menu-component": Menu,
-    "modal-component": Modal,
-    "nav-component": Navigation,
-    "table-component": Table
+    'breadcrumbs-component': Breadcrumbs,
+    'info-component': Info,
+    'menu-component': Menu,
+    'modal-component': Modal,
+    'nav-component': Navigation,
+    'table-component': Table,
   },
   computed: {
-    ...mapState(["mode"])
+    ...mapState(['csrfToken', 'mode']),
   },
   created() {
     this.getData();
@@ -60,55 +60,57 @@ export default {
     return {
       actions: { ...defaultActions },
       columns: [],
-      data: []
+      data: [],
     };
   },
   methods: {
-    ...mapActions(["showNotification"]),
+    ...mapActions(['showNotification']),
     async getData() {
       try {
-        const { data } = await axios.get("/city/index");
-        if (data.hasOwnProperty("columns") && data.columns.length > 0) {
+        const { data } = await axios.get('/city/index');
+        if (data.hasOwnProperty('columns') && data.columns.length > 0) {
           this.columns = data.columns;
         }
-        if (data.hasOwnProperty("data") && data.data.length > 0) {
+        if (data.hasOwnProperty('data') && data.data.length > 0) {
           this.data = data.data;
         }
         if (
-          data.hasOwnProperty("actions") &&
+          data.hasOwnProperty('actions') &&
           Object.keys(data.actions).length
         ) {
           this.actions = data.actions;
         }
       } catch (e) {
-        this.$store.dispatch("showNotification", {
+        this.$store.dispatch('showNotification', {
           text:
-            "Ошибка загрузки списка городов! " +
-            (e && e.message ? e.message : ""),
-          type: "error"
+            'Ошибка загрузки списка городов! ' +
+            (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
     async handleDelete(id) {
       try {
-        const { data: token } = await axios.get("/site/csrf");
-        const { data: res } = await axios.post("/city/delete?id=" + id, token);
+        const { data: res } = await axios.post(
+          '/city/delete?id=' + id,
+          this.csrfToken
+        );
         await this.getData();
-        this.$store.dispatch("showNotification", {
-          text: res.text ? res.text : "Город успешно удален!",
-          type: "success"
+        this.$store.dispatch('showNotification', {
+          text: res.text ? res.text : 'Город успешно удален!',
+          type: 'success',
         });
       } catch (e) {
-        this.$store.dispatch("showNotification", {
+        this.$store.dispatch('showNotification', {
           text:
-            "Не удалось удалить город! " + (e && e.message ? e.message : ""),
-          type: "error"
+            'Не удалось удалить город! ' + (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
     handleCreate() {
-      $("#cityModal").modal("show");
-    }
-  }
+      $('#cityModal').modal('show');
+    },
+  },
 };
 </script>

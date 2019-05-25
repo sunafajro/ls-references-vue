@@ -34,50 +34,54 @@
 
 <script>
 /* global $ */
-import axios from "axios";
-import { mapActions } from "vuex";
+import axios from 'axios';
+import { mapActions, mapState } from 'vuex';
 
 const emptyStudnorm = {
-  name: "",
-  value: ""
+  name: '',
+  value: '',
 };
 
 export default {
+  computed: {
+    ...mapState(['csrfToken']),
+  },
   data() {
     return {
-      studnorm: { ...emptyStudnorm }
+      studnorm: { ...emptyStudnorm },
     };
   },
   methods: {
-    ...mapActions(["showNotification"]),
+    ...mapActions(['showNotification']),
     async createStudnorm() {
       try {
-        const { data: token } = await axios.get("/site/csrf");
         let value =
-          typeof this.studnorm.value === "string"
+          typeof this.studnorm.value === 'string'
             ? this.studnorm.value
             : String(this.studnorm.value);
-        value = value.replace(/,/g, ".");
-        token.Studnorm = {
-          name: this.studnorm.name,
-          value
-        };
-        const { data: res } = await axios.post("/studnorm/create", token);
-        this.$store.dispatch("showNotification", {
+        value = value.replace(/,/g, '.');
+        const body = Object.assign({}, this.csrfToken, {
+          Studnorm: {
+            name: this.studnorm.name,
+            value,
+          },
+        });
+        const { data: res } = await axios.post('/studnorm/create', body);
+        this.$store.dispatch('showNotification', {
           text: res.text
             ? res.text
-            : "Норма оплаты студента успешно добавлена!",
-          type: "success"
+            : 'Норма оплаты студента успешно добавлена!',
+          type: 'success',
         });
         this.studnorm = { ...emptyStudnorm };
-        $("#studnormModal").modal("hide");
-        this.$emit("refresh");
+        $('#studnormModal').modal('hide');
+        this.$emit('refresh');
       } catch (e) {
-        this.$store.dispatch("showNotification", {
+        this.$store.dispatch('showNotification', {
           text:
-            "Не удалось добавить норму оплаты студента! " +
-            (e && e.message ? e.message : ""),
-          type: "error"
+            'Не удалось добавить норму оплаты студента! ' +
+            (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
@@ -89,21 +93,21 @@ export default {
     validate() {
       let result = true;
       if (!this.studnorm.name) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Название» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Название» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       if (!this.studnorm.value) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Значение» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Значение» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       return result;
-    }
-  }
+    },
+  },
 };
 </script>

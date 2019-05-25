@@ -28,41 +28,44 @@
 
 <script>
 /* global $ */
-import axios from "axios";
-import { mapActions } from "vuex";
+import axios from 'axios';
+import { mapActions, mapState } from 'vuex';
 
 const emptyCity = {
-  name: ""
+  name: '',
 };
 
 export default {
+  computed: {
+    ...mapState(['csrfToken']),
+  },
   data() {
     return {
-      city: { ...emptyCity }
+      city: { ...emptyCity },
     };
   },
   methods: {
-    ...mapActions(["showNotification"]),
+    ...mapActions(['showNotification']),
     async createCity() {
       try {
-        const { data: token } = await axios.get("/site/csrf");
-        token.City = {
-          name: this.city.name
-        };
-        const { data: res } = await axios.post("/city/create", token);
-        this.$store.dispatch("showNotification", {
-          text: res.text ? res.text : "Город успешно добавлен!",
-          type: "success"
+        const body = Object.assign({}, this.csrfToken, {
+          City: {
+            name: this.city.name,
+          },
+        });
+        const { data: res } = await axios.post('/city/create', body);
+        this.$store.dispatch('showNotification', {
+          text: res.text ? res.text : 'Город успешно добавлен!',
+          type: 'success',
         });
         this.city = { ...emptyCity };
-        $("#cityModal").modal("hide");
-        this.$emit("refresh");
+        $('#cityModal').modal('hide');
+        this.$emit('refresh');
       } catch (e) {
-        this.$store.dispatch("showNotification", {
+        this.$store.dispatch('showNotification', {
           text:
-            "Не удалось добавить город! " +
-            (e && e.message ? e.message : ""),
-          type: "error"
+            'Не удалось добавить город! ' + (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
@@ -74,15 +77,15 @@ export default {
     validate() {
       let result = true;
       if (!this.city.name) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Название» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Название» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       return result;
-    }
-  }
+    },
+  },
 };
 </script>
 

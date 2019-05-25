@@ -41,49 +41,50 @@
 
 <script>
 /* global $ */
-import axios from "axios";
-import { mapActions } from "vuex";
+import axios from 'axios';
+import { mapActions, mapState } from 'vuex';
 
 const emptyPremium = {
-  language: "-select-",
-  value: ""
+  language: '-select-',
+  value: '',
 };
 
 export default {
-  props: {
-    languages: {
-      type: Array,
-      require: true
-    }
+  computed: {
+    ...mapState(['csrfToken']),
   },
   data: function() {
     return {
-      premium: { ...emptyPremium }
+      premium: { ...emptyPremium },
     };
   },
   methods: {
-    ...mapActions(["showNotification"]),
+    ...mapActions(['showNotification']),
     async createPremium() {
       try {
-        const { data: token } = await axios.get("/site/csrf");
-        token.Langpremium = {
-          calc_lang: this.premium.language,
-          value: this.premium.value
-        };
-        const { data: res } = await axios.post("/language-premium/create", token);
-        this.$store.dispatch("showNotification", {
-          text: res.text ? res.text : "Языковая надбавка успешно добавлен!",
-          type: "success"
+        const body = Object.assign({}, this.csrfToken, {
+          LanguagePremium: {
+            language_id: this.premium.language,
+            value: this.premium.value,
+          },
+        });
+        const { data: res } = await axios.post(
+          '/language-premium/create',
+          body
+        );
+        this.$store.dispatch('showNotification', {
+          text: res.text ? res.text : 'Языковая надбавка успешно добавлен!',
+          type: 'success',
         });
         this.premium = { ...emptyPremium };
-        $("#premiumModal").modal("hide");
-        this.$emit("refresh");
+        $('#premiumModal').modal('hide');
+        this.$emit('refresh');
       } catch (e) {
-        this.$store.dispatch("showNotification", {
+        this.$store.dispatch('showNotification', {
           text:
-            "Не удалось добавить языковую надбавку! " +
-            (e && e.message ? e.message : ""),
-          type: "error"
+            'Не удалось добавить языковую надбавку! ' +
+            (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
@@ -96,23 +97,29 @@ export default {
       let result = true;
       if (
         !this.premium.language ||
-        (this.premium.language && this.premium.language === "-select-")
+        (this.premium.language && this.premium.language === '-select-')
       ) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Язык» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Язык» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       if (!this.premium.value) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Значение» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Значение» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       return result;
-    }
-  }
+    },
+  },
+  props: {
+    languages: {
+      type: Array,
+      require: true,
+    },
+  },
 };
 </script>

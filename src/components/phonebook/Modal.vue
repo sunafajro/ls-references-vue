@@ -36,45 +36,49 @@
 
 <script>
 /* global $ */
-import axios from "axios";
-import { mapActions } from "vuex";
+import axios from 'axios';
+import { mapActions, mapState } from 'vuex';
 
 const emptyContact = {
-  name: "",
-  phone: "",
-  description: ""
+  name: '',
+  phone: '',
+  description: '',
 };
 
 export default {
+  computed: {
+    ...mapState(['csrfToken']),
+  },
   data() {
     return {
-      contact: { ...emptyContact }
+      contact: { ...emptyContact },
     };
   },
   methods: {
-    ...mapActions(["showNotification"]),
+    ...mapActions(['showNotification']),
     async createContact() {
       try {
-        const { data: token } = await axios.get("/site/csrf");
-        token.Phonebook = {
-          name: this.contact.name,
-          phonenumber: this.contact.phone,
-          description: this.contact.description
-        };
-        const { data: res } = await axios.post("/phonebook/create", token);
-        this.$store.dispatch("showNotification", {
-          text: res.text ? res.text : "Номер телефона успешно добавлен!",
-          type: "success"
+        const body = Object.assign({}, this.csrfToken, {
+          Phonebook: {
+            name: this.contact.name,
+            phonenumber: this.contact.phone,
+            description: this.contact.description,
+          },
+        });
+        const { data: res } = await axios.post('/phonebook/create', body);
+        this.$store.dispatch('showNotification', {
+          text: res.text ? res.text : 'Номер телефона успешно добавлен!',
+          type: 'success',
         });
         this.contact = { ...emptyContact };
-        $("#contactModal").modal("hide");
-        this.$emit("refresh");
+        $('#contactModal').modal('hide');
+        this.$emit('refresh');
       } catch (e) {
-        this.$store.dispatch("showNotification", {
+        this.$store.dispatch('showNotification', {
           text:
-            "Не удалось добавить номер телефона! " +
-            (e && e.message ? e.message : ""),
-          type: "error"
+            'Не удалось добавить номер телефона! ' +
+            (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
@@ -86,28 +90,28 @@ export default {
     validate() {
       let result = true;
       if (!this.contact.name) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Название» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Название» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       if (!this.contact.phone) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Телефон» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Телефон» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       if (!this.contact.description) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Описание» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Описание» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       return result;
-    }
-  }
+    },
+  },
 };
 </script>

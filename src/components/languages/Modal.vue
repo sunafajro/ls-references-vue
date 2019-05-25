@@ -30,39 +30,43 @@
 
 <script>
 /* global $ */
-import axios from "axios";
-import { mapActions } from "vuex";
+import axios from 'axios';
+import { mapActions, mapState } from 'vuex';
 
 const emptyLanguage = {
-  name: ""
+  name: '',
 };
 
 export default {
+  computed: {
+    ...mapState(['csrfToken']),
+  },
   data() {
     return {
-      language: { ...emptyLanguage }
+      language: { ...emptyLanguage },
     };
   },
   methods: {
-    ...mapActions(["showNotification"]),
+    ...mapActions(['showNotification']),
     async createLanguage() {
       try {
-        const { data: token } = await axios.get("/site/csrf");
-        token.Language = {
-          name: this.language.name
-        };
-        const { data: res } = await axios.post("/language/create", token);
-        this.$store.dispatch("showNotification", {
-          text: res.text ? res.text : "Язык успешно добавлен!",
-          type: "success"
+        const body = Object.assign({}, this.csrfToken, {
+          Language: {
+            name: this.language.name,
+          },
+        });
+        const { data: res } = await axios.post('/language/create', body);
+        this.$store.dispatch('showNotification', {
+          text: res.text ? res.text : 'Язык успешно добавлен!',
+          type: 'success',
         });
         this.city = { ...emptyLanguage };
-        $("#languageModal").modal("hide");
-        this.$emit("refresh");
+        $('#languageModal').modal('hide');
+        this.$emit('refresh');
       } catch (e) {
-        this.$store.dispatch("showNotification", {
-          text: "Не удалось добавить язык!" + (e && e.message ? e.message : ""),
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Не удалось добавить язык! ' + (e && e.message ? e.message : ''),
+          type: 'error',
         });
       }
     },
@@ -74,14 +78,14 @@ export default {
     validate() {
       let result = true;
       if (!this.language.name) {
-        this.$store.dispatch("showNotification", {
-          text: "Поле «Название» не может быть пустым!",
-          type: "error"
+        this.$store.dispatch('showNotification', {
+          text: 'Поле «Название» не может быть пустым!',
+          type: 'error',
         });
         result = false;
       }
       return result;
-    }
-  }
+    },
+  },
 };
 </script>
