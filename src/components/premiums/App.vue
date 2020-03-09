@@ -70,7 +70,7 @@ export default {
     async getLanguages() {
       try {
         const { data } = await axios.get('/language/index');
-        if (data.hasOwnProperty('data') && data.data.length > 0) {
+        if (Object.prototype.hasOwnProperty.call(data, 'data') && data.data.length > 0) {
           this.languages = data.data;
         }
       } catch (e) {
@@ -85,14 +85,14 @@ export default {
     async getData() {
       try {
         const { data } = await axios.get('/language-premium/index');
-        if (data.hasOwnProperty('columns') && data.columns.length > 0) {
+        if (Object.prototype.hasOwnProperty.call(data, 'columns') && data.columns.length > 0) {
           this.columns = data.columns;
         }
-        if (data.hasOwnProperty('data') && data.data.length > 0) {
+        if (Object.prototype.hasOwnProperty.call(data, 'data') && data.data.length > 0) {
           this.data = data.data;
         }
         if (
-          data.hasOwnProperty('actions') &&
+          Object.prototype.hasOwnProperty.call(data, 'actions') &&
           Object.keys(data.actions).length
         ) {
           this.actions = data.actions;
