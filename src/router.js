@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Contacts from './components/contacts/App';
+import Volonteers from './components/volonteers/App';
 import Languages from './components/languages/App';
 import Studentnorms from './components/studentnorms/App';
 import Teachernorms from './components/teachernorms/App';
@@ -21,6 +22,11 @@ export default new Router({
       path: '/contacts',
       name: 'contacts',
       component: Contacts,
+    },
+    {
+      path: '/volonteers',
+      name: 'volonteers',
+      component: Volonteers,
     },
     {
       path: '/languages',
