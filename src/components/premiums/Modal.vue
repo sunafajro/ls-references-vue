@@ -51,7 +51,7 @@ const emptyPremium = {
 
 export default {
   computed: {
-    ...mapState(['csrfToken']),
+    ...mapState(['csrfToken', 'urls']),
   },
   data: function() {
     return {
@@ -69,7 +69,7 @@ export default {
           },
         });
         const { data: res } = await axios.post(
-          '/language-premium/create',
+          this.urls.createItem.replace('{name}', this.$route.name),
           body
         );
         this.$store.dispatch('showNotification', {

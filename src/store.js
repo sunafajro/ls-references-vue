@@ -13,6 +13,7 @@ export default new Vuex.Store({
     links: [],
     navLinks: [],
     mode: el.dataset.mode,
+    urls: JSON.parse(el.dataset.urls),
     user: {},
   },
   mutations: {
@@ -57,9 +58,9 @@ export default new Vuex.Store({
     /**
      * csrf токен для валидации post запросов
      */
-    async getCSRFToken({ commit, dispatch }) {
+    async getCSRFToken({ commit, dispatch, state }) {
       try {
-        const { data } = await axios.get('/site/csrf');
+        const { data } = await axios.get(state.urls.csrf);
         commit('updateCSRFToken', data);
       } catch (e) {
         dispatch('showNotification', {
@@ -71,9 +72,9 @@ export default new Vuex.Store({
         throw new Error('Ошибка запроса к серверу!');
       }
     },
-    async getMenuLinks({ commit, dispatch }) {
+    async getMenuLinks({ commit, dispatch, state }) {
       try {
-        const { data } = await axios.get('/reference/menu-links');
+        const { data } = await axios.get(state.urls.menuLinks);
         commit('updateLinks', data.links);
       } catch (e) {
         dispatch('showNotification', {
@@ -84,12 +85,11 @@ export default new Vuex.Store({
         });
       }
     },
-    async getNavLinks({ commit, dispatch }) {
+    async getNavLinks({ commit, dispatch, state }) {
       try {
-        const { data: token } = await axios.get('/site/csrf');
         const { data: nav } = await axios.post(
-          '/site/nav',
-          Object.assign({}, token, { type: 'all' })
+          state.urls.navLinks,
+          Object.assign({}, state.csrfToken, { type: 'all' })
         );
         commit('updateNavLinks', nav.navElements);
       } catch (e) {
@@ -101,9 +101,9 @@ export default new Vuex.Store({
         });
       }
     },
-    async getUserInfo({ commit, dispatch }) {
+    async getUserInfo({ commit, dispatch, state }) {
       try {
-        const { data } = await axios.get('/user/get-info');
+        const { data } = await axios.get(state.urls.userInfo);
         commit('updateUser', data.userData);
       } catch (e) {
         dispatch('showNotification', {

@@ -47,7 +47,7 @@ const emptyRoom = {
 
 export default {
   computed: {
-    ...mapState(['csrfToken']),
+    ...mapState(['csrfToken', 'urls']),
   },
   data() {
     return {
@@ -64,7 +64,7 @@ export default {
             calc_office: this.room.office,
           },
         });
-        const { data: res } = await axios.post('/room/create', body);
+        const { data: res } = await axios.post(this.urls.createItem.replace('{name}', this.$route.name), body);
         this.$store.dispatch('showNotification', {
           text: res.text ? res.text : 'Кабинет успешно добавлен!',
           type: 'success',

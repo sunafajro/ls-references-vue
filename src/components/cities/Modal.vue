@@ -37,7 +37,7 @@ const emptyCity = {
 
 export default {
   computed: {
-    ...mapState(['csrfToken']),
+    ...mapState(['csrfToken', 'urls']),
   },
   data() {
     return {
@@ -53,7 +53,7 @@ export default {
             name: this.city.name,
           },
         });
-        const { data: res } = await axios.post('/city/create', body);
+        const { data: res } = await axios.post(this.urls.createItem.replace('{name}', this.$route.name), body);
         this.$store.dispatch('showNotification', {
           text: res.text ? res.text : 'Город успешно добавлен!',
           type: 'success',

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Phonebook from './components/phonebook/App';
+import Contacts from './components/contacts/App';
 import Languages from './components/languages/App';
 import Studentnorms from './components/studentnorms/App';
 import Teachernorms from './components/teachernorms/App';
@@ -15,12 +15,12 @@ Vue.use(Router);
 
 export default new Router({
   routes: [
-    { path: '/', name: 'root', redirect: '/phonebook' },
-    { path: '/index', name: 'home', redirect: '/phonebook' },
+    { path: '/', name: 'root', redirect: '/contacts' },
+    { path: '/index', name: 'home', redirect: '/contacts' },
     {
-      path: '/phonebook',
-      name: 'phonebook',
-      component: Phonebook,
+      path: '/contacts',
+      name: 'contacts',
+      component: Contacts,
     },
     {
       path: '/languages',

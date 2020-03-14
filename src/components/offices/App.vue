@@ -51,7 +51,7 @@ export default {
     'table-component': Table,
   },
   computed: {
-    ...mapState(['csrfToken', 'mode']),
+    ...mapState(['csrfToken', 'mode', 'urls']),
   },
   created() {
     this.getCities();
@@ -69,7 +69,7 @@ export default {
     ...mapActions(['showNotification']),
     async getCities() {
       try {
-        const { data } = await axios.get('/city/index');
+        const { data } = await axios.get(this.urls.listItems.replace('{name}', 'cities'));
         if (Object.prototype.hasOwnProperty.call(data, 'data') && data.data.length > 0) {
           this.cities = data.data;
         }
@@ -84,7 +84,7 @@ export default {
     },
     async getData() {
       try {
-        const { data } = await axios.get('/office/index?type=with_cities');
+        const { data } = await axios.get(this.urls.listItems.replace('{name}', this.$route.name));
         if (Object.prototype.hasOwnProperty.call(data, 'columns') && data.columns.length > 0) {
           this.columns = data.columns;
         }
@@ -109,7 +109,7 @@ export default {
     async handleDelete(id) {
       try {
         const { data: res } = await axios.post(
-          '/office/delete?id=' + id,
+          this.urls.deleteItem.replace('{name}', this.$route.name) + '/' + id,
           this.csrfToken
         );
         await this.getData();

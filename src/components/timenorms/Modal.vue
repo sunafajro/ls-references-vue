@@ -44,7 +44,7 @@ const emptyTimenorm = {
 
 export default {
   computed: {
-    ...mapState(['csrfToken']),
+    ...mapState(['csrfToken', 'urls']),
   },
   data() {
     return {
@@ -66,7 +66,7 @@ export default {
             value,
           },
         });
-        const { data: res } = await axios.post('/timenorm/create', body);
+        const { data: res } = await axios.post(this.urls.createItem.replace('{name}', this.$route.name), body);
         this.$store.dispatch('showNotification', {
           text: res.text ? res.text : 'Норма времени успешно добавлена!',
           type: 'success',

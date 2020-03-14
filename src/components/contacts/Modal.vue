@@ -47,7 +47,7 @@ const emptyContact = {
 
 export default {
   computed: {
-    ...mapState(['csrfToken']),
+    ...mapState(['csrfToken', 'urls']),
   },
   data() {
     return {
@@ -65,7 +65,7 @@ export default {
             description: this.contact.description,
           },
         });
-        const { data: res } = await axios.post('/phonebook/create', body);
+        const { data: res } = await axios.post(this.urls.createItem.replace('{name}', this.$route.name), body);
         this.$store.dispatch('showNotification', {
           text: res.text ? res.text : 'Номер телефона успешно добавлен!',
           type: 'success',

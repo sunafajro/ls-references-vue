@@ -47,7 +47,7 @@ const emptyOffice = {
 
 export default {
   computed: {
-    ...mapState(['csrfToken']),
+    ...mapState(['csrfToken', 'urls']),
   },
   data() {
     return {
@@ -65,7 +65,7 @@ export default {
             num: 0,
           },
         });
-        const { data: res } = await axios.post('/office/create', body);
+        const { data: res } = await axios.post(this.urls.createItem.replace('{name}', this.$route.name), body);
         this.$store.dispatch('showNotification', {
           text: res.text ? res.text : 'Офис успешно добавлен!',
           type: 'success',

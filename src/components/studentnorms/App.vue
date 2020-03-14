@@ -50,7 +50,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['csrfToken', 'mode']),
+    ...mapState(['csrfToken', 'mode', 'urls']),
   },
   created() {
     this.getData();
@@ -67,7 +67,7 @@ export default {
     ...mapActions(['showNotification']),
     async getData() {
       try {
-        const { data } = await axios.get('/studnorm/index');
+        const { data } = await axios.get(this.urls.listItems.replace('{name}', this.$route.name));
         if (Object.prototype.hasOwnProperty.call(data, 'columns') && data.columns.length > 0) {
           this.columns = data.columns;
         }
@@ -92,7 +92,7 @@ export default {
     async handleDelete(id) {
       try {
         const { data: res } = await axios.post(
-          '/studnorm/delete?id=' + id,
+          this.urls.deleteItem.replace('{name}', this.$route.name) + '/' + id,
           this.csrfToken
         );
         this.$store.dispatch('showNotification', {

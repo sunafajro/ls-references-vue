@@ -51,7 +51,7 @@ export default {
     'table-component': Table,
   },
   computed: {
-    ...mapState(['csrfToken', 'mode']),
+    ...mapState(['csrfToken', 'mode', 'urls']),
   },
   created() {
     this.getOffices();
@@ -69,7 +69,7 @@ export default {
     ...mapActions(['showNotification']),
     async getOffices() {
       try {
-        const { data } = await axios.get('/office/index?type=with_cities');
+        const { data } = await axios.get(this.urls.listItems.replace('{name}', 'offices'));
         if (Object.prototype.hasOwnProperty.call(data, 'data') && data.data.length > 0) {
           this.offices = data.data;
         }
@@ -84,7 +84,7 @@ export default {
     },
     async getData() {
       try {
-        const { data } = await axios.get('/room/index');
+        const { data } = await axios.get(this.urls.listItems.replace('{name}', this.$route.name));
         if (Object.prototype.hasOwnProperty.call(data, 'columns') && data.columns.length > 0) {
           this.columns = data.columns;
         }
@@ -109,7 +109,7 @@ export default {
     async handleDelete(id) {
       try {
         const { data: res } = await axios.post(
-          '/room/delete?id=' + id,
+          this.urls.deleteItem.replace('{name}', this.$route.name) + '/' + id,
           this.csrfToken
         );
         await this.getData();
